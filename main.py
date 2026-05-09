@@ -84,7 +84,7 @@ class CovidETL:
 
         df_w_valid['date'] = df_w_valid['date'].astype(int)
         df_w_valid = df_w_valid.sort_values(by='date')
-        df_w_valid = df_w_valid[df_w_valid['date'] >= 2019]
+        df_w_valid = df_w_valid[df_w_valid['date'] >= 2010]
 
         self.df_pib_historico = df_w_valid[['date', 'value']]
 
