@@ -32,7 +32,7 @@ class CovidETL:
     def transform(self, df_c, df_w):
 
         df_c['Data'] = pd.to_datetime(df_c['Data'])
-        
+
         mortes_diarias = df_c['Mortes'].diff()
         mortes_diarias = mortes_diarias.fillna(0)
         mortes_diarias = mortes_diarias.clip(lower=0)
@@ -42,7 +42,7 @@ class CovidETL:
             mortes_diarias > limite_superior
         )
 
-        mortes_diarias = mortes_diarias.fillna(method='ffill')
+        mortes_diarias = mortes_diarias.ffill()
 
         media_movel = (
             mortes_diarias
