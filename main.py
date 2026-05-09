@@ -161,8 +161,8 @@ def run_dashboard():
         )
 
         m3.metric(
-            "PIB do País (USD)",
-            f"US$ {formatar_moeda_br(pib_total)}"
+            "PIB do País (BRL)",
+            f"RS$ {formatar_moeda_br(pib_total)}"
         )
 
         st.write("---")
