@@ -5,7 +5,6 @@ import streamlit as st
 import plotly.express as px
 import plotly.graph_objects as go
 
-# --- CONFIGURAÇÃO ---
 DB_CONFIG = "sqlite:///covid_analise.db" 
 
 class CovidETL:
@@ -123,15 +122,12 @@ def run_dashboard():
         with col_right:
             st.subheader("Proporção de Desfechos")
             
-            # Em vez de iloc[-1], pegamos o maior valor acumulado para evitar erros de data
             total_confirmados = df['Casos'].max()
             mortes_acumuladas = df['Mortes'].max()
-            recuperados_acumulados = df['Recuperados'].max() # Aqui ele vai achar os 17M que você viu no banco
+            recuperados_acumulados = df['Recuperados'].max() 
             
-            # Cálculo de Ativos baseado nos máximos
             ativos = total_confirmados - (mortes_acumuladas + recuperados_acumulados)
             
-            # Segurança: Se ainda assim o cálculo de ativos der erro ou negativo
             if ativos < 0: ativos = 0
 
             labels = ['Ativos/Em Tratamento', 'Óbitos', 'Recuperados']
@@ -144,10 +140,16 @@ def run_dashboard():
                 hole=0.5
             )
             
-            fig_pie.update_layout(
-                template="plotly_dark", 
-                showlegend=True,
-                margin=dict(t=20, b=20, l=0, r=0)
+            fig_line.update_layout(
+            template="plotly_dark",
+            yaxis_title="Média de Mortes",
+            xaxis_title="Data"
+        )
+
+            fig_line.update_traces(
+                hovertemplate=
+                "<b>Data:</b> %{x}<br>" +
+                "<b>Média de Mortes:</b> %{y:,.0f}<extra></extra>"
             )
             
             st.plotly_chart(fig_pie, use_container_width=True)
