@@ -31,7 +31,10 @@ class CovidETL:
 
     def transform(self, df_c, df_w):
         df_c['Data'] = pd.to_datetime(df_c['Data'])
-        df_c['Media_Movel_Mortes'] = df_c['Mortes'].diff().rolling(window=7).mean()
+        mortes_diarias = df_c['Mortes'].diff()
+        mortes_diarias = mortes_diarias.clip(lower=0)
+        mortes_diarias = mortes_diarias.where(mortes_diarias < 10000)
+        df_c['Media_Movel_Mortes'] = mortes_diarias.rolling(window=7).mean()
         
         df_w_valid = df_w.dropna(subset=['value'])
         pib_valor = df_w_valid.sort_values(by='date', ascending=False).iloc[0]['value'] if not df_w_valid.empty else 0
