@@ -287,7 +287,7 @@ def run_dashboard():
 
         fig_gdp.add_vrect(
             x0=2020,
-            x1=2021,
+            x1=2023,
             fillcolor="red",
             opacity=0.2,
             line_width=0
