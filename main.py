@@ -30,18 +30,43 @@ class CovidETL:
         return df_c, pd.DataFrame(w_res[1])
 
     def transform(self, df_c, df_w):
+
         df_c['Data'] = pd.to_datetime(df_c['Data'])
+        
         mortes_diarias = df_c['Mortes'].diff()
+        mortes_diarias = mortes_diarias.fillna(0)
         mortes_diarias = mortes_diarias.clip(lower=0)
-        mortes_diarias = mortes_diarias.where(mortes_diarias < 10000)
-        df_c['Media_Movel_Mortes'] = mortes_diarias.rolling(window=7).mean()
-        
+        limite_superior = mortes_diarias.quantile(0.99)
+
+        mortes_diarias = mortes_diarias.mask(
+            mortes_diarias > limite_superior
+        )
+
+        mortes_diarias = mortes_diarias.fillna(method='ffill')
+
+        media_movel = (
+            mortes_diarias
+            .rolling(window=7, min_periods=1)
+            .mean()
+        )
+
+        media_movel = media_movel.clip(lower=0)
+
+        df_c['Media_Movel_Mortes'] = media_movel.round(2)
+
         df_w_valid = df_w.dropna(subset=['value'])
-        pib_valor = df_w_valid.sort_values(by='date', ascending=False).iloc[0]['value'] if not df_w_valid.empty else 0
-        
+
+        pib_valor = (
+            df_w_valid
+            .sort_values(by='date', ascending=False)
+            .iloc[0]['value']
+            if not df_w_valid.empty else 0
+        )
+
         df_c['PIB_Referencia'] = pib_valor
         df_c['Pais'] = self.country_name.capitalize()
-        return df_c.fillna(0)
+
+        return df_c
 
     def load(self, df):
         engine = create_engine(DB_CONFIG)
