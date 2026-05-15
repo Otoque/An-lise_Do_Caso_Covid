@@ -237,8 +237,8 @@ def run_dashboard():
                 values=values,
                 color_discrete_sequence=[
                     '#3b82f6',
-                    '#ef4444',
-                    '#10b981'
+                    '#10b981',
+                    '#ef4444' 
                 ],
                 hole=0.5
             )
